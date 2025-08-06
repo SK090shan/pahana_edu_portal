@@ -32,8 +32,7 @@
             <div class="form-card">
                 <h5 class="mb-3">2. Add Items to Bill</h5>
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-6">
-                        <label for="itemSelect" class="form-label">Product</label>
+                    <div class="col-md-6"><label for="itemSelect" class="form-label">Product</label>
                         <select id="itemSelect" class="form-select">
                             <%
                                 List<Item> items = (List<Item>) request.getAttribute("itemList");
@@ -47,126 +46,117 @@
                             %>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label for="itemQuantity" class="form-label">Quantity</label>
+                    <div class="col-md-3"><label for="itemQuantity" class="form-label">Quantity</label>
                         <input type="number" id="itemQuantity" class="form-control" value="1" min="1">
                     </div>
-                    <div class="col-md-3">
-                        <button type="button" id="addItemBtn" class="btn btn-secondary w-100">Add Item</button>
-                    </div>
+                    <div class="col-md-3"><button type="button" id="addItemBtn" class="btn btn-secondary w-100">Add Item</button></div>
                 </div>
-
                 <hr class="my-4">
-
                 <h6 class="mb-3">Invoice Items</h6>
                 <table class="table">
                     <thead class="table-light">
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
+                        <tr><th>Product Name</th><th>Quantity</th><th>Price</th><th>Total</th><th>Action</th></tr>
                     </thead>
-                    <tbody id="billItemsTableBody">
-                        <!-- Items will be added here by JavaScript -->
-                    </tbody>
+                    <tbody id="billItemsTableBody"></tbody>
                 </table>
-                <div class="text-end">
-                    <h4>Grand Total: <span id="grandTotal">0.00</span></h4>
-                </div>
+                <div class="text-end"><h4>Grand Total: <span id="grandTotal">0.00</span></h4></div>
             </div>
 
-            <!-- Submit Button -->
-            <div class="mt-4 text-end">
-                <button type="submit" class="btn btn-primary btn-lg">Generate Bill & Receipt</button>
-            </div>
+            <div class="mt-4 text-end"><button type="submit" class="btn btn-primary btn-lg">Finalize Bill</button></div>
         </form>
     </div>
 </div>
 
-<!-- ======================= JAVASCRIPT LOGIC ======================= -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- Get all the necessary HTML elements ---
-        const addItemBtn = document.getElementById('addItemBtn');
-        const itemSelect = document.getElementById('itemSelect');
-        const itemQuantityInput = document.getElementById('itemQuantity');
-        const tableBody = document.getElementById('billItemsTableBody');
-        const grandTotalSpan = document.getElementById('grandTotal');
-        let itemCounter = 0;
+document.addEventListener('DOMContentLoaded', function() {
+    const addItemBtn = document.getElementById('addItemBtn');
+    const itemSelect = document.getElementById('itemSelect');
+    const itemQuantityInput = document.getElementById('itemQuantity');
+    const tableBody = document.getElementById('billItemsTableBody');
+    const grandTotalSpan = document.getElementById('grandTotal');
 
-        // --- Event Listener for the 'Add Item' button ---
-        addItemBtn.addEventListener('click', function() {
-            const selectedOption = itemSelect.options[itemSelect.selectedIndex];
-            if (!selectedOption || !selectedOption.value) {
-                alert('Please select a valid item.');
-                return;
-            }
+    addItemBtn.addEventListener('click', function() {
+        console.log("Add Item button clicked."); // DEBUG
+        const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+        if (!selectedOption || !selectedOption.value) { return; }
 
-            const itemId = selectedOption.value;
-            const itemName = selectedOption.text;
-            const itemPrice = parseFloat(selectedOption.dataset.price);
-            const quantity = parseInt(itemQuantityInput.value, 10);
+        const itemId = selectedOption.value;
+        const itemName = selectedOption.text;
+        const itemPrice = parseFloat(selectedOption.getAttribute('data-price')); // Use getAttribute for reliability
+        const quantity = parseInt(itemQuantityInput.value, 10);
+        
+        console.log("Data read:", {itemId, itemName, itemPrice, quantity}); // DEBUG
 
-            if (isNaN(itemPrice) || quantity <= 0) {
-                alert('Invalid quantity. Please enter a number greater than 0.');
-                return;
-            }
+        if (isNaN(itemPrice) || quantity <= 0) {
+            alert('Invalid quantity or price. Please check your selection.');
+            return;
+        }
+        const lineTotal = itemPrice * quantity;
 
-            const lineTotal = itemPrice * quantity;
+        // --- Manually build the row and its children ---
+        const newRow = document.createElement('tr');
+        
+        // Cell 1: Name and Hidden Inputs
+        const nameCell = document.createElement('td');
+        nameCell.textContent = itemName; // Set visible text
+        
+        const hiddenId = document.createElement('input');
+        hiddenId.type = 'hidden'; hiddenId.name = 'itemId'; hiddenId.value = itemId;
+        nameCell.appendChild(hiddenId);
 
-            // --- Create the new row and cells ---
-            const newRow = tableBody.insertRow();
-            const cell1 = newRow.insertCell(0); // Product Name & Hidden Inputs
-            const cell2 = newRow.insertCell(1); // Quantity
-            const cell3 = newRow.insertCell(2); // Price
-            const cell4 = newRow.insertCell(3); // Total
-            const cell5 = newRow.insertCell(4); // Action
+        const hiddenQty = document.createElement('input');
+        hiddenQty.type = 'hidden'; hiddenQty.name = 'quantity'; hiddenQty.value = quantity;
+        nameCell.appendChild(hiddenQty);
 
-            // --- Add back the crucial hidden input fields for form submission ---
-            const hiddenInputs = `
-                <input type="hidden" name="items[${itemCounter}].id" value="${itemId}">
-                <input type="hidden" name="items[${itemCounter}].quantity" value="${quantity}">
-                <input type="hidden" name="items[${itemCounter}].price" value="${itemPrice.toFixed(2)}">
-            `;
-            
-            // Populate the cells with data
-            cell1.innerHTML = itemName + hiddenInputs; // Add hidden inputs here
-            cell2.textContent = quantity;
-            cell3.textContent = itemPrice.toFixed(2);
-            cell4.textContent = lineTotal.toFixed(2);
-            cell5.innerHTML = `<button type="button" class="btn btn-danger btn-sm remove-item-btn">Remove</button>`;
-            
-            itemCounter++;
-            updateGrandTotal(); // Call the function to update the total
-        });
+        const hiddenPrice = document.createElement('input');
+        hiddenPrice.type = 'hidden'; hiddenPrice.name = 'price'; hiddenPrice.value = itemPrice.toFixed(2);
+        nameCell.appendChild(hiddenPrice);
+        
+        newRow.appendChild(nameCell);
 
-        // --- Event Listener for the 'Remove' button ---
-        tableBody.addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-item-btn')) {
-                // Find the closest parent row 'tr' and remove it
-                event.target.closest('tr').remove();
-                updateGrandTotal(); // Update the total after removing an item
-            }
-        });
+        // Other cells
+        const qtyCell = document.createElement('td');
+        qtyCell.textContent = quantity;
+        newRow.appendChild(qtyCell);
+        
+        const priceCell = document.createElement('td');
+        priceCell.textContent = itemPrice.toFixed(2);
+        newRow.appendChild(priceCell);
+        
+        const totalCell = document.createElement('td');
+        totalCell.textContent = lineTotal.toFixed(2);
+        newRow.appendChild(totalCell);
+        
+        const actionCell = document.createElement('td');
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-danger btn-sm remove-item-btn';
+        removeBtn.textContent = 'Remove';
+        actionCell.appendChild(removeBtn);
+        newRow.appendChild(actionCell);
 
-        // --- Function to calculate and display the grand total ---
-        function updateGrandTotal() {
-            let total = 0;
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                // Get the text from the 4th cell (index 3), which is the line total
-                const lineTotalValue = parseFloat(row.cells[3].textContent);
-                if (!isNaN(lineTotalValue)) {
-                    total += lineTotalValue;
-                }
-            });
-            // Update the grand total span with the new calculated total
-            grandTotalSpan.textContent = total.toFixed(2);
+        tableBody.appendChild(newRow);
+        console.log("Row added to table."); // DEBUG
+        updateGrandTotal();
+    });
+
+    tableBody.addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-item-btn')) {
+            event.target.closest('tr').remove();
+            updateGrandTotal();
         }
     });
+    
+    function updateGrandTotal() {
+        let total = 0;
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const lineTotalValue = parseFloat(row.cells[3].textContent);
+            if (!isNaN(lineTotalValue)) { total += lineTotalValue; }
+        });
+        grandTotalSpan.textContent = total.toFixed(2);
+    }
+});
 </script>
 
 <jsp:include page="footer.jsp" />

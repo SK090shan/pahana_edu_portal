@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,44 +36,61 @@ public class BillingServlet extends HttpServlet {
         billDAO = DAOFactory.getBillDAO();
     }
 
-    // This method prepares the data for the billing form
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Customer> customerList = customerDAO.getAllCustomers();
         List<Item> itemList = itemDAO.getAllItems();
-        
         request.setAttribute("customerList", customerList);
         request.setAttribute("itemList", itemList);
-        
         request.getRequestDispatcher("billing.jsp").forward(request, response);
     }
     
-    // This method processes the submitted bill
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         User staffUser = (User) request.getSession().getAttribute("user");
-        int customerId = Integer.parseInt(request.getParameter("customerId"));
         
+        // --- Server-Side Validation ---
+        String customerIdParam = request.getParameter("customerId");
+        if (customerIdParam == null || customerIdParam.isEmpty()) {
+            response.getWriter().println("Error: A customer must be selected.");
+            return;
+        }
+        
+        int customerId = Integer.parseInt(customerIdParam);
+
+        String[] itemIds = request.getParameterValues("itemId");
+        String[] quantities = request.getParameterValues("quantity");
+        String[] prices = request.getParameterValues("price");
+
+        if (itemIds == null || itemIds.length == 0) {
+            // Handle case where form is submitted with no items
+            request.setAttribute("errorMessage", "Cannot create an empty bill. Please add at least one item.");
+            // We must re-populate the customer/item lists before forwarding back to the form
+            List<Customer> customerList = customerDAO.getAllCustomers();
+            List<Item> itemList = itemDAO.getAllItems();
+            request.setAttribute("customerList", customerList);
+            request.setAttribute("itemList", itemList);
+            request.getRequestDispatcher("billing.jsp").forward(request, response);
+            return;
+        }
+
         List<BillItem> billItems = new ArrayList<>();
         BigDecimal grandTotal = BigDecimal.ZERO;
 
-        // The JavaScript creates parameters like items[0].id, items[1].id, etc.
-        // We loop until we can't find the next item in the sequence.
-        for (int i = 0; ; i++) {
-            String idParam = "items[" + i + "].id";
-            if (request.getParameter(idParam) == null) {
-                break; // No more items
+        for (int i = 0; i < itemIds.length; i++) {
+            try {
+                BillItem billItem = new BillItem();
+                billItem.setItemId(Integer.parseInt(itemIds[i]));
+                billItem.setQuantity(Integer.parseInt(quantities[i]));
+                billItem.setPricePerUnit(new BigDecimal(prices[i]));
+                billItems.add(billItem);
+
+                BigDecimal lineTotal = billItem.getPricePerUnit().multiply(new BigDecimal(billItem.getQuantity()));
+                grandTotal = grandTotal.add(lineTotal);
+            } catch (NumberFormatException e) {
+                // This catches any error if the data is not a valid number
+                response.getWriter().println("Error: Invalid data submitted for items. Please try again.");
+                return;
             }
-            
-            int itemId = Integer.parseInt(request.getParameter(idParam));
-            int quantity = Integer.parseInt(request.getParameter("items[" + i + "].quantity"));
-            BigDecimal price = new BigDecimal(request.getParameter("items[" + i + "].price"));
-            
-            BillItem billItem = new BillItem();
-            billItem.setItemId(itemId);
-            billItem.setQuantity(quantity);
-            billItem.setPricePerUnit(price);
-            
-            billItems.add(billItem);
-            grandTotal = grandTotal.add(price.multiply(new BigDecimal(quantity)));
         }
 
         Bill bill = new Bill();
@@ -80,16 +98,13 @@ public class BillingServlet extends HttpServlet {
         bill.setStaffId(staffUser.getUserId());
         bill.setTotalAmount(grandTotal);
         bill.setBillItems(billItems);
-        
-        // Save the bill and get its newly generated ID
+
         int newBillId = billDAO.saveBill(bill);
-        
+
         if (newBillId != -1) {
-            // Success! Redirect to a receipt servlet to generate the PDF.
-            response.sendRedirect("receipt?billId=" + newBillId);
+            response.sendRedirect("billConfirmation?billId=" + newBillId);
         } else {
-            // Handle error - maybe redirect to an error page
-            response.getWriter().println("Error saving the bill.");
+            response.getWriter().println("Error: Could not save the bill to the database.");
         }
     }
 }
