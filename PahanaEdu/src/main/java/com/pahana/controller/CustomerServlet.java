@@ -25,16 +25,12 @@ public class CustomerServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        switch (action) {
-            case "insert":
-                addCustomer(request, response);
-                break;
-            case "update":
-                updateCustomer(request, response);
-                break;
-            default:
-                listCustomers(request, response);
-                break;
+        if ("insert".equals(action)) {
+            addCustomer(request, response);
+        } else if ("update".equals(action)) {
+            updateCustomer(request, response);
+        } else {
+            listCustomers(request, response);
         }
     }
 
@@ -72,11 +68,16 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        Customer existingCustomer = customerDAO.getCustomerById(id);
-        request.setAttribute("customer", existingCustomer);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("customer-form.jsp");
-        dispatcher.forward(request, response);
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Customer existingCustomer = customerDAO.getCustomerById(id);
+            request.setAttribute("customer", existingCustomer);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("customer-form.jsp");
+            dispatcher.forward(request, response);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid customer ID format: " + e.getMessage());
+            response.sendRedirect("customer?action=list");
+        }
     }
 
     private void addCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -103,13 +104,16 @@ public class CustomerServlet extends HttpServlet {
     private void deleteCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User loggedInUser = (User) request.getSession().getAttribute("user");
 
-        // SERVER-SIDE SECURITY CHECK
-        if (loggedInUser != null && "Admin".equals(loggedInUser.getRole())) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            customerDAO.deleteCustomer(id);
-            response.sendRedirect("customer?action=list");
+        if (loggedInUser != null && "Admin".equalsIgnoreCase(loggedInUser.getRole())) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                customerDAO.deleteCustomer(id);
+                response.sendRedirect("customer?action=list");
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid customer ID for delete: " + e.getMessage());
+                response.sendRedirect("customer?action=list");
+            }
         } else {
-            // If user is not an Admin, send a 'Forbidden' error.
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to perform this action.");
         }
     }

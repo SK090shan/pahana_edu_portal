@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 
 /**
  * Model (POJO) representing a single Item in the bookstore inventory.
+ * Uses BigDecimal for price to ensure financial accuracy.
  */
 public class Item {
     private int itemId;
     private String itemName;
-    private BigDecimal price; // Using BigDecimal for accurate currency calculations
+    private BigDecimal price;
     private int stock;
 
     // --- Getters and Setters ---

@@ -26,19 +26,12 @@ public class ItemServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "list";
-        }
-        switch (action) {
-            case "insert":
-                insertItem(request, response);
-                break;
-            case "update":
-                updateItem(request, response);
-                break;
-            default:
-                listItems(request, response);
-                break;
+        if ("insert".equals(action)) {
+            insertItem(request, response);
+        } else if ("update".equals(action)) {
+            updateItem(request, response);
+        } else {
+            listItems(request, response);
         }
     }
 
@@ -76,11 +69,17 @@ public class ItemServlet extends HttpServlet {
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        Item existingItem = itemDAO.getItemById(id);
-        request.setAttribute("item", existingItem);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
-        dispatcher.forward(request, response);
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Item existingItem = itemDAO.getItemById(id);
+            request.setAttribute("item", existingItem);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
+            dispatcher.forward(request, response);
+        } catch (NumberFormatException e) {
+            // This will catch the error if the 'id' parameter is missing or not a number
+            System.err.println("Invalid item ID format: " + e.getMessage());
+            response.sendRedirect("item?action=list"); // Redirect to the list to prevent the error page
+        }
     }
 
     private void insertItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -105,11 +104,15 @@ public class ItemServlet extends HttpServlet {
     private void deleteItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User loggedInUser = (User) request.getSession().getAttribute("user");
 
-        // SERVER-SIDE SECURITY CHECK
         if (loggedInUser != null && "Admin".equals(loggedInUser.getRole())) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            itemDAO.deleteItem(id);
-            response.sendRedirect("item?action=list");
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                itemDAO.deleteItem(id);
+                response.sendRedirect("item?action=list");
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid item ID for delete: " + e.getMessage());
+                response.sendRedirect("item?action=list");
+            }
         } else {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to perform this action.");
         }

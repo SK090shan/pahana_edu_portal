@@ -1,3 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.pahana.model.customer.Customer" %>
+<%@ page import="com.pahana.model.user.User" %>
+
 <jsp:include page="header.jsp" />
 
 <div class="d-flex">
@@ -21,25 +26,39 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <%-- 1. Loop through the list of customers sent from the servlet --%>
-                    <c:forEach var="customer" items="${customerList}">
+                    <%
+                        List<Customer> customerList = (List<Customer>) request.getAttribute("customerList");
+                        if (customerList != null && !customerList.isEmpty()) {
+                            for (Customer customer : customerList) {
+                    %>
+                                <tr>
+                                    <td><%= customer.getAccountNumber() %></td>
+                                    <td><%= customer.getFullName() %></td>
+                                    <td><%= customer.getAddress() %></td>
+                                    <td><%= customer.getTelephone() %></td>
+                                    <td>
+                                        <a href="customer?action=edit&id=<%= customer.getCustomerId() %>" class="btn btn-sm btn-warning">Edit</a>
+                                        <%
+                                            User loggedInUser = (User) session.getAttribute("user");
+                                            if (loggedInUser != null && "Admin".equalsIgnoreCase(loggedInUser.getRole())) {
+                                        %>
+                                            <a href="customer?action=delete&id=<%= customer.getCustomerId() %>" class="btn btn-sm btn-danger" 
+                                               onclick="return confirm('Are you sure you want to delete this customer?');">Delete</a>
+                                        <%
+                                            }
+                                        %>
+                                    </td>
+                                </tr>
+                    <%
+                            }
+                        } else {
+                    %>
                         <tr>
-                            <td><c:out value="${customer.accountNumber}" /></td>
-                            <td><c:out value="${customer.fullName}" /></td>
-                            <td><c:out value="${customer.address}" /></td>
-                            <td><c:out value="${customer.telephone}" /></td>
-                            <td>
-                                <a href="customer?action=edit&id=${customer.customerId}" class="btn btn-sm btn-warning">Edit</a>
-                                
-                                <%-- 2. ROLE-BASED SECURITY CHECK --%>
-                                <%-- This 'Delete' button will ONLY be rendered if the user's role in the session is 'Admin' --%>
-                                <c:if test="${sessionScope.user.role == 'Admin'}">
-                                    <a href="customer?action=delete&id=${customer.customerId}" class="btn btn-sm btn-danger" 
-                                       onclick="return confirm('Are you sure you want to delete this customer?');">Delete</a>
-                                </c:if>
-                            </td>
+                            <td colspan="5" class="text-center">No customers found.</td>
                         </tr>
-                    </c:forEach>
+                    <%
+                        }
+                    %>
                 </tbody>
             </table>
         </div>

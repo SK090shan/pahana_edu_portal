@@ -1,6 +1,5 @@
 package com.pahana.dao.impl;
 
-
 import com.pahana.dao.CustomerDAO;
 import com.pahana.model.customer.Customer;
 import com.pahana.util.DatabaseManager;
@@ -12,9 +11,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Concrete implementation of the CustomerDAO interface using JDBC.
- */
 public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
@@ -110,7 +106,6 @@ public class CustomerDAOImpl implements CustomerDAO {
         return 0;
     }
 
-    // Private helper method to avoid repeating code
     private Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
         Customer customer = new Customer();
         customer.setCustomerId(rs.getInt("customerId"));

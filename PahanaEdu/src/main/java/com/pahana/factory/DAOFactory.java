@@ -5,6 +5,9 @@ import com.pahana.dao.UserDAO;
 import com.pahana.dao.impl.ItemDAOImpl;
 import com.pahana.dao.impl.UserDAOImpl;
 import com.pahana.dao.CustomerDAO;
+import com.pahana.dao.BillDAO;
+import com.pahana.dao.impl.BillDAOImpl;
+
 
 
 import com.pahana.dao.impl.CustomerDAOImpl;
@@ -30,5 +33,9 @@ public class DAOFactory {
     // Add similar methods for CustomerDAO and BillDAO as you create them
     public static CustomerDAO getCustomerDAO() {
         return new CustomerDAOImpl();
+    }
+    
+    public static BillDAO getBillDAO() {
+        return new BillDAOImpl();
     }
 }
