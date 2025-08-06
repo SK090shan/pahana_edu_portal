@@ -1,10 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- 
-    This is a simplified, "static" version of the sidebar.
-    It removes the Expression Language ('${...}') that was causing the library errors.
-    The links will work perfectly, but the "active" page will not be highlighted.
-    This is a stable workaround to allow us to continue development.
---%>
+
 <div class="sidebar bg-dark p-3 d-flex flex-column">
     <div>
         <a href="dashboard" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
