@@ -61,7 +61,7 @@ The system is built on a classic 3-Tier Architecture, ensuring a strong separati
     -   The `com.pahana.model` packages contain the POJOs.
     -   The `com.pahana.dao` packages contain the data access logic.
 
-### 2. Core Design Patterns (Gamma et al., 1994)
+### 2. Core Design Patterns
 
 -   **Model-View-Controller (MVC):** This is the primary architectural pattern.
     -   **Model:** The POJOs in `com.pahana.model.*`.
@@ -187,14 +187,6 @@ CREATE TABLE BillItems (
     -   In Eclipse, right-click the project -> **Maven -> Update Project**.
     -   Configure an Apache Tomcat 11.0 server in Eclipse.
     -   Right-click the project -> **Run As -> Run on Server**.
-    -   The application will be accessible at `http://localhost:8080/PahanaEduV2/`.
+    -   The application will be accessible at `http://localhost:8080/PahanaEducation/`.
 
----
 
-## References
-
-Fowler, M. (2004) *UML Distilled: A Brief Guide to the Standard Object Modeling Language*. 3rd edn. Boston: Addison-Wesley Professional.
-
-Gamma, E., Helm, R., Johnson, R. and Vlissides, J. (1994) *Design Patterns: Elements of Reusable Object-Oriented Software*. Boston: Addison-Wesley Professional.
-
-Sommerville, I. (2016) *Software Engineering*. 10th edn. Harlow: Pearson.
