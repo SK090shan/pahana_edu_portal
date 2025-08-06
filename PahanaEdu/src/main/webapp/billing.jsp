@@ -89,6 +89,7 @@
 <!-- ======================= JAVASCRIPT LOGIC ======================= -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Get all the necessary HTML elements ---
         const addItemBtn = document.getElementById('addItemBtn');
         const itemSelect = document.getElementById('itemSelect');
         const itemQuantityInput = document.getElementById('itemQuantity');
@@ -96,6 +97,7 @@
         const grandTotalSpan = document.getElementById('grandTotal');
         let itemCounter = 0;
 
+        // --- Event Listener for the 'Add Item' button ---
         addItemBtn.addEventListener('click', function() {
             const selectedOption = itemSelect.options[itemSelect.selectedIndex];
             if (!selectedOption || !selectedOption.value) {
@@ -103,94 +105,68 @@
                 return;
             }
 
-            // --- 1. Get all the data from the form ---
             const itemId = selectedOption.value;
             const itemName = selectedOption.text;
             const itemPrice = parseFloat(selectedOption.dataset.price);
-            const maxStock = parseInt(selectedOption.dataset.stock, 10);
             const quantity = parseInt(itemQuantityInput.value, 10);
 
-            if (isNaN(itemPrice) || quantity <= 0 || quantity > maxStock) {
-                alert('Invalid quantity. Please check stock and ensure quantity is at least 1.');
+            if (isNaN(itemPrice) || quantity <= 0) {
+                alert('Invalid quantity. Please enter a number greater than 0.');
                 return;
             }
 
             const lineTotal = itemPrice * quantity;
 
-            // --- 2. Manually create each element (The Bulletproof Method) ---
-            const newRow = document.createElement('tr');
+            // --- Create the new row and cells ---
+            const newRow = tableBody.insertRow();
+            const cell1 = newRow.insertCell(0); // Product Name & Hidden Inputs
+            const cell2 = newRow.insertCell(1); // Quantity
+            const cell3 = newRow.insertCell(2); // Price
+            const cell4 = newRow.insertCell(3); // Total
+            const cell5 = newRow.insertCell(4); // Action
 
-            // --- Cell 1: Item Name (with hidden inputs) ---
-            const nameCell = document.createElement('td');
-            nameCell.appendChild(document.createTextNode(itemName)); // Add the visible name
+            // --- Add back the crucial hidden input fields for form submission ---
+            const hiddenInputs = `
+                <input type="hidden" name="items[${itemCounter}].id" value="${itemId}">
+                <input type="hidden" name="items[${itemCounter}].quantity" value="${quantity}">
+                <input type="hidden" name="items[${itemCounter}].price" value="${itemPrice.toFixed(2)}">
+            `;
             
-            // Create and append hidden inputs
-            const hiddenId = document.createElement('input');
-            hiddenId.type = 'hidden';
-            hiddenId.name = `items[${itemCounter}].id`;
-            hiddenId.value = itemId;
-            nameCell.appendChild(hiddenId);
-
-            const hiddenQty = document.createElement('input');
-            hiddenQty.type = 'hidden';
-            hiddenQty.name = `items[${itemCounter}].quantity`;
-            hiddenQty.value = quantity;
-            nameCell.appendChild(hiddenQty);
-
-            const hiddenPrice = document.createElement('input');
-            hiddenPrice.type = 'hidden';
-            hiddenPrice.name = `items[${itemCounter}].price`;
-            hiddenPrice.value = itemPrice.toFixed(2);
-            nameCell.appendChild(hiddenPrice);
+            // Populate the cells with data
+            cell1.innerHTML = itemName + hiddenInputs; // Add hidden inputs here
+            cell2.textContent = quantity;
+            cell3.textContent = itemPrice.toFixed(2);
+            cell4.textContent = lineTotal.toFixed(2);
+            cell5.innerHTML = `<button type="button" class="btn btn-danger btn-sm remove-item-btn">Remove</button>`;
             
-            newRow.appendChild(nameCell); // Add this completed cell to the row
-
-            // --- Cell 2, 3, 4: Quantity, Price, Total ---
-            const qtyCell = document.createElement('td');
-            qtyCell.textContent = quantity;
-            newRow.appendChild(qtyCell);
-
-            const priceCell = document.createElement('td');
-            priceCell.textContent = itemPrice.toFixed(2);
-            newRow.appendChild(priceCell);
-            
-            const totalCell = document.createElement('td');
-            totalCell.textContent = lineTotal.toFixed(2);
-            newRow.appendChild(totalCell);
-
-            // --- Cell 5: Action Button ---
-            const actionCell = document.createElement('td');
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'btn btn-danger btn-sm remove-item-btn';
-            removeBtn.textContent = 'Remove';
-            actionCell.appendChild(removeBtn);
-            newRow.appendChild(actionCell);
-
-            // --- 3. Add the fully constructed row to the table ---
-            tableBody.appendChild(newRow);
             itemCounter++;
-            updateGrandTotal();
+            updateGrandTotal(); // Call the function to update the total
         });
 
+        // --- Event Listener for the 'Remove' button ---
         tableBody.addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-item-btn')) {
+                // Find the closest parent row 'tr' and remove it
                 event.target.closest('tr').remove();
-                updateGrandTotal();
+                updateGrandTotal(); // Update the total after removing an item
             }
         });
 
+        // --- Function to calculate and display the grand total ---
         function updateGrandTotal() {
             let total = 0;
             const rows = tableBody.querySelectorAll('tr');
             rows.forEach(row => {
+                // Get the text from the 4th cell (index 3), which is the line total
                 const lineTotalValue = parseFloat(row.cells[3].textContent);
                 if (!isNaN(lineTotalValue)) {
                     total += lineTotalValue;
                 }
             });
-            grandTotalSpan.innerText = total.toFixed(2);
+            // Update the grand total span with the new calculated total
+            grandTotalSpan.textContent = total.toFixed(2);
         }
     });
+</script>
 
 <jsp:include page="footer.jsp" />

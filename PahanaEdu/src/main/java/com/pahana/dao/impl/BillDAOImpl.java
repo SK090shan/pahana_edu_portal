@@ -7,6 +7,7 @@ import com.pahana.util.DatabaseManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BillDAOImpl implements BillDAO {
 
@@ -74,8 +75,48 @@ public class BillDAOImpl implements BillDAO {
 
     @Override
     public Bill getBillById(int billId) {
-        // You would implement this to fetch a bill for viewing/reprinting.
-        // It would involve joining Bills, BillItems, and Items tables.
-        return null; 
+        Bill bill = null;
+        String billSQL = "SELECT * FROM Bills WHERE billId = ?";
+        // This SQL joins three tables to get all the data we need in one go
+        String itemsSQL = "SELECT bi.*, i.itemName FROM BillItems bi JOIN Items i ON bi.itemId = i.itemId WHERE bi.billId = ?";
+        
+        try (Connection conn = DatabaseManager.getInstance().getConnection()) {
+            // First, get the main bill details
+            try (PreparedStatement stmt = conn.prepareStatement(billSQL)) {
+                stmt.setInt(1, billId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    bill = new Bill();
+                    bill.setBillId(rs.getInt("billId"));
+                    bill.setCustomerId(rs.getInt("customerId"));
+                    bill.setStaffId(rs.getInt("staffId"));
+                    bill.setBillDate(rs.getTimestamp("billDate"));
+                    bill.setTotalAmount(rs.getBigDecimal("totalAmount"));
+                }
+            }
+
+            // If a bill was found, get its line items
+            if (bill != null) {
+                List<BillItem> billItems = new ArrayList<>();
+                try (PreparedStatement stmt = conn.prepareStatement(itemsSQL)) {
+                    stmt.setInt(1, billId);
+                    ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        BillItem item = new BillItem();
+                        item.setBillItemId(rs.getInt("billItemId"));
+                        item.setBillId(rs.getInt("billId"));
+                        item.setItemId(rs.getInt("itemId"));
+                        item.setQuantity(rs.getInt("quantity"));
+                        item.setPricePerUnit(rs.getBigDecimal("pricePerUnit"));
+                        item.setItemName(rs.getString("itemName")); // Get the joined item name
+                        billItems.add(item);
+                    }
+                }
+                bill.setBillItems(billItems);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bill;
     }
 }
