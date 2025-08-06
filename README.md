@@ -190,3 +190,11 @@ CREATE TABLE BillItems (
     -   The application will be accessible at `http://localhost:8080/PahanaEducation/`.
 
 
+<img width="1873" height="467" alt="image" src="https://github.com/user-attachments/assets/53ff6952-2c3a-4260-9a2d-a23e773a789e" />
+<img width="1873" height="981" alt="image" src="https://github.com/user-attachments/assets/0b5b07b0-f7f2-4552-a095-e2de1e4c1c41" />
+<img width="1862" height="810" alt="image" src="https://github.com/user-attachments/assets/a35de853-287e-4a14-a93f-75d04fa133ca" />
+<img width="1870" height="475" alt="image" src="https://github.com/user-attachments/assets/9b914f53-307b-4e35-ad7c-fca3bc41cad3" />
+<img width="1014" height="782" alt="image" src="https://github.com/user-attachments/assets/eb132bc2-58e3-467a-96f6-8d8d31ba948c" />
+
+
+
