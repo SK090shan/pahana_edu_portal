@@ -1,6 +1,6 @@
 # Pahana Education - Enterprise Bookstore Billing System
 
-PahanaEduV2 is a complete re-architecture of a web-based billing and inventory management system for the "Pahana Edu" bookstore. This version was built with a "theory-first" mindset, focusing on the explicit implementation of enterprise-grade design patterns, a robust 3-tier architecture, and advanced security features as outlined in the course lectures.
+Pahana Education is a complete re-architecture of a web-based billing and inventory management system for the "Pahana Edu" bookstore. This version was built with a "theory-first" mindset, focusing on the explicit implementation of enterprise-grade design patterns, a robust 3-tier architecture, and advanced security features as outlined in the course lectures.
 
 ---
 
