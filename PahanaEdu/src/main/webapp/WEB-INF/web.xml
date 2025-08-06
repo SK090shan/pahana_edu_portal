@@ -36,6 +36,13 @@
 		<servlet-name>LogoutServlet</servlet-name>
 		<servlet-class>com.pahana.controller.LogoutServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>ItemServlet</display-name>
+		<servlet-name>ItemServlet</servlet-name>
+		<servlet-class>com.pahana.controller.ItemServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterServlet</servlet-name>
 		<url-pattern>/RegisterServlet</url-pattern>
@@ -55,6 +62,10 @@
 	<servlet-mapping>
 		<servlet-name>LogoutServlet</servlet-name>
 		<url-pattern>/LogoutServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ItemServlet</servlet-name>
+		<url-pattern>/ItemServlet</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
