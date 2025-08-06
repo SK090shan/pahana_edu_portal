@@ -104,16 +104,20 @@ public class ItemServlet extends HttpServlet {
     private void deleteItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User loggedInUser = (User) request.getSession().getAttribute("user");
 
-        if (loggedInUser != null && "Admin".equals(loggedInUser.getRole())) {
+        // SERVER-SIDE SECURITY CHECK: The most important part
+        if (loggedInUser != null && "Admin".equalsIgnoreCase(loggedInUser.getRole())) {
+            // If the user IS an Admin, proceed with deletion
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 itemDAO.deleteItem(id);
-                response.sendRedirect("item?action=list");
+                response.sendRedirect("item?action=list"); // Redirect back to the list
             } catch (NumberFormatException e) {
-                System.err.println("Invalid item ID for delete: " + e.getMessage());
-                response.sendRedirect("item?action=list");
+                // Handle cases where the ID is not a valid number
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid item ID.");
             }
         } else {
+            // If the user is NOT an Admin, send a 'Forbidden' error.
+            // This stops non-admins even if they guess the URL.
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to perform this action.");
         }
     }

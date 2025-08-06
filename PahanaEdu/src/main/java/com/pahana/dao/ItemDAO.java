@@ -14,4 +14,5 @@ public interface ItemDAO {
     boolean updateItem(Item item);
     boolean deleteItem(int itemId);
     int getTotalItemCount(); // For the dashboard
+    int getLowStockItemCount(int threshold);
 }

@@ -71,6 +71,20 @@
 		<servlet-name>BillConfirmationServlet</servlet-name>
 		<servlet-class>com.pahana.controller.BillConfirmationServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>ReportServlet</display-name>
+		<servlet-name>ReportServlet</servlet-name>
+		<servlet-class>com.pahana.controller.ReportServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>StaffManagementServlet</display-name>
+		<servlet-name>StaffManagementServlet</servlet-name>
+		<servlet-class>com.pahana.controller.StaffManagementServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterServlet</servlet-name>
 		<url-pattern>/RegisterServlet</url-pattern>
@@ -110,6 +124,14 @@
 	<servlet-mapping>
 		<servlet-name>BillConfirmationServlet</servlet-name>
 		<url-pattern>/BillConfirmationServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReportServlet</servlet-name>
+		<url-pattern>/ReportServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StaffManagementServlet</servlet-name>
+		<url-pattern>/StaffManagementServlet</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

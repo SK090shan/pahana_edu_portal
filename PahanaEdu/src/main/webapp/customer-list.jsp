@@ -38,6 +38,8 @@
                                     <td><%= customer.getTelephone() %></td>
                                     <td>
                                         <a href="customer?action=edit&id=<%= customer.getCustomerId() %>" class="btn btn-sm btn-warning">Edit</a>
+                                        
+                                        <%-- START: ROLE-BASED CHECK (Copied from item-list.jsp) --%>
                                         <%
                                             User loggedInUser = (User) session.getAttribute("user");
                                             if (loggedInUser != null && "Admin".equalsIgnoreCase(loggedInUser.getRole())) {
@@ -45,8 +47,9 @@
                                             <a href="customer?action=delete&id=<%= customer.getCustomerId() %>" class="btn btn-sm btn-danger" 
                                                onclick="return confirm('Are you sure you want to delete this customer?');">Delete</a>
                                         <%
-                                            }
+                                            } // End of the 'if' statement
                                         %>
+                                        <%-- END: ROLE-BASED CHECK --%>
                                     </td>
                                 </tr>
                     <%

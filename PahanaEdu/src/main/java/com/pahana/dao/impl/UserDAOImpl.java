@@ -97,13 +97,15 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM Users ORDER BY fullName";
+        // Order by role then by name for a nicely sorted list
+        String sql = "SELECT * FROM Users ORDER BY role, fullName";
         
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
             while (rs.next()) {
+                // We can reuse our existing helper method to map the data
                 userList.add(mapResultSetToUser(rs));
             }
         } catch (SQLException e) {
@@ -130,6 +132,28 @@ public class UserDAOImpl implements UserDAO {
             return false;
         }
     }
+    
+    
+    @Override
+    public boolean deleteUser(int userId) {
+        // NOTE: This will fail if the user has created bills, due to the foreign key constraint.
+        // In a production system, you would typically set the user's status to 'INACTIVE' instead of deleting.
+        // For this assignment, direct deletion is acceptable.
+        String sql = "DELETE FROM Users WHERE userId = ?";
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, userId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error during user deletion: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
     
     /**
      * A private helper method to avoid code duplication.

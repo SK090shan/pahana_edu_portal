@@ -110,4 +110,41 @@ public class BillDAOImpl implements BillDAO {
         }
         return bill;
     }
+    
+    
+    @Override
+    public List<Bill> getAllBills() {
+        List<Bill> billList = new ArrayList<>();
+        // This SQL query joins the Bills, Customers, and Users tables to fetch the names
+        // we need for the report. It orders by the most recent bills first.
+        String sql = "SELECT b.billId, b.billDate, b.totalAmount, c.fullName AS customerName, u.fullName AS staffName " +
+                     "FROM Bills b " +
+                     "JOIN Customers c ON b.customerId = c.customerId " +
+                     "JOIN Users u ON b.staffId = u.userId " +
+                     "ORDER BY b.billDate DESC";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Bill bill = new Bill();
+                bill.setBillId(rs.getInt("billId"));
+                bill.setBillDate(rs.getTimestamp("billDate"));
+                bill.setTotalAmount(rs.getBigDecimal("totalAmount"));
+                
+                // Populate the new fields we added to the Bill model
+                bill.setCustomerName(rs.getString("customerName"));
+                bill.setStaffName(rs.getString("staffName"));
+                
+                billList.add(bill);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return billList;
+    }
+    
+    
+    
 }

@@ -57,4 +57,6 @@ public interface UserDAO {
      * @return true if the update was successful, false otherwise.
      */
     boolean updateUserStatus(int userId, String newStatus);
+    
+    boolean deleteUser(int userId);
 }

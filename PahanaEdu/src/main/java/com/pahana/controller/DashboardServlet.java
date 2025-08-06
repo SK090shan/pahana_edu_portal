@@ -26,12 +26,18 @@ public class DashboardServlet extends HttpServlet {
         // Fetch data from DAOs
         int totalItems = itemDAO.getTotalItemCount();
         int totalCustomers = customerDAO.getTotalCustomerCount();
+        
+        int lowStockThreshold = 5;
+        int lowStockCount = itemDAO.getLowStockItemCount(lowStockThreshold);
 
         // Set data as request attributes to be used by the JSP
         request.setAttribute("totalItems", totalItems);
         request.setAttribute("totalCustomers", totalCustomers);
+        request.setAttribute("lowStockCount", lowStockCount); 
         
         // Forward the request to the dashboard JSP
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
+    
+    
 }

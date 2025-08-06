@@ -43,19 +43,16 @@
                                     <td><%= item.getItemName() %></td>
                                     <td><%= item.getPrice() %></td>
                                     <td><%= item.getStock() %></td>
-                                    <td>
+                                   <td>
                                         <a href="item?action=edit&id=<%= item.getItemId() %>" class="btn btn-sm btn-warning">Edit</a>
                                         <%
-                                            // Get the logged-in user from the session
                                             User loggedInUser = (User) session.getAttribute("user");
-                                            // Check if user exists and has the 'Admin' role
-                                            if (loggedInUser != null && "Admin".equals(loggedInUser.getRole())) {
+                                            if (loggedInUser != null && "Admin".equalsIgnoreCase(loggedInUser.getRole())) {
                                         %>
-                                            <%-- If they are an Admin, print the Delete button --%>
                                             <a href="item?action=delete&id=<%= item.getItemId() %>" class="btn btn-sm btn-danger" 
                                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
                                         <%
-                                            } // End of the Admin role check 'if' statement
+                                            }
                                         %>
                                     </td>
                                 </tr>

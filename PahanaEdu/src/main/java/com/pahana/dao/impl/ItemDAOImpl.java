@@ -104,6 +104,24 @@ public class ItemDAOImpl implements ItemDAO {
         }
         return 0;
     }
+    
+    @Override
+    public int getLowStockItemCount(int threshold) {
+        String sql = "SELECT COUNT(*) FROM Items WHERE stock < ?";
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, threshold); // Use the threshold parameter
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Return 0 if there's an error
+    }
 
     private Item mapResultSetToItem(ResultSet rs) throws SQLException {
         Item item = new Item();

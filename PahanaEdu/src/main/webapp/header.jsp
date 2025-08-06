@@ -20,4 +20,3 @@
 </head>
 <body>
     
-    <%-- The body tag is opened here and will be closed in footer.jsp --%>
