@@ -46,7 +46,7 @@
                     </li>
             
             <%
-                } // End of the 'if' statement
+                } 
             %>
             <%-- END: ROLE-BASED CHECK --%>
         </ul>
