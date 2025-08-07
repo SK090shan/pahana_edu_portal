@@ -15,7 +15,7 @@ public class DatabaseManager {
     private static DatabaseManager instance;
 
 
-    private static final String URL = "jdbc:sqlserver://DESKTOP\\SQLEXPRESS;databaseName=pahana_edu_db;encrypt=true;trustServerCertificate=true;";
+    private static final String URL = "jdbc:sqlserver://DESKTOP\\SQLEXPRESS;databaseName=pahana_edu_db;encrypt=true;trustServerCertificate=true;"; 
     private static final String USER = "sa";
     private static final String PASSWORD = "12345678";
     private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
