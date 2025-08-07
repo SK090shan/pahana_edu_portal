@@ -14,7 +14,7 @@ public class DatabaseManager {
 
     private static DatabaseManager instance;
 
-
+    // TODO: Update these with your actual database credentials
     private static final String URL = "jdbc:sqlserver://DESKTOP-133\\SQLEXPRESS;databaseName=pahana_edu_db;encrypt=true;trustServerCertificate=true;";
     private static final String USER = "sa";
     private static final String PASSWORD = "12345678";

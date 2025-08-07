@@ -14,7 +14,7 @@ import com.pahana.dao.impl.CustomerDAOImpl;
 
 
 /**
- * Implementing the Factory Design Pattern.
+ * LECTURE 3: Implementing the Factory Design Pattern.
  * This class provides a centralized way to get instances of our DAO implementations.
  * It decouples the controllers (clients) from the concrete DAO classes. If we ever want 
  * to switch to a different implementation (e.g., for a different database),

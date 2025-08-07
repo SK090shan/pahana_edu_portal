@@ -6,7 +6,7 @@ import java.util.List;
 import com.pahana.model.user.User;
 
 /**
- * OOP - Abstraction.
+ * LECTURE 2: OOP - Abstraction.
  * This interface defines the contract for data access operations related to the User entity.
  * Any class that handles user data persistence must implement these methods. This decouples
  * the business logic (controllers) from the specific database implementation.

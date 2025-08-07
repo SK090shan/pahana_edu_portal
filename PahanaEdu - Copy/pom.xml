@@ -68,27 +68,6 @@
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>2.0.0</version>
         </dependency>
-        
-        <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-    <version>4.21.0</version> <!-- A recent, stable version of Selenium -->
-    <scope>test</scope> <!-- 'test' scope means this library is only for testing -->
-</dependency>
-        <dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-api</artifactId>
-    <version>5.10.2</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-engine</artifactId>
-    <version>5.10.2</version>
-    <scope>test</scope>
-</dependency>
-        
-        
 
     </dependencies>
 
